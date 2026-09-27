@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import { Users, UserPlus, Search, X, Loader2, Phone, Filter, Calendar } from 'lucide-react';
+import { Users, UserPlus, Search, X, Loader2, Phone, Filter, Calendar, Edit2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,9 +12,10 @@ const StudentsPage = () => {
   const [className, setClassName] = useState('');
   const [year, setYear] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [editingStudent, setEditingStudent] = useState(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    studentId: '', name: '', className: '', year: 1, rollNumber: '',
+    name: '', className: '', year: 1, rollNumber: '',
     parent: { name: '', whatsappNumber: '', relation: 'Parent' }
   });
 
@@ -33,22 +34,50 @@ const StudentsPage = () => {
 
   useEffect(() => { fetchStudents(); }, [search, className, year]);
 
+  const handleOpenAddModal = () => {
+    setEditingStudent(null);
+    setForm({
+      name: '', className: '', year: 1, rollNumber: '',
+      parent: { name: '', whatsappNumber: '', relation: 'Parent' }
+    });
+    setShowModal(true);
+  };
+
+  const handleOpenEditModal = (student) => {
+    setEditingStudent(student);
+    setForm({
+      name: student.name || '',
+      className: student.className || '',
+      year: student.year || 1,
+      rollNumber: student.rollNumber || '',
+      parent: {
+        name: student.parent?.name || '',
+        whatsappNumber: student.parent?.whatsappNumber || '',
+        relation: student.parent?.relation || 'Parent'
+      }
+    });
+    setShowModal(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.className) { toast.error('Student Name and Class required'); return; }
     setSaving(true);
     try {
-      await api.post('/students', form);
-      toast.success('Student added successfully!');
+      if (editingStudent) {
+        await api.put(`/students/${editingStudent._id}`, form);
+        toast.success('Student updated successfully!');
+      } else {
+        await api.post('/students', form);
+        toast.success('Student added successfully!');
+      }
       setShowModal(false);
-      setForm({ name: '', className: '', year: 1, rollNumber: '', parent: { name: '', whatsappNumber: '', relation: 'Parent' } });
       fetchStudents();
-    } catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
+    } catch (err) { toast.error(err.response?.data?.message || 'Operation failed'); }
     finally { setSaving(false); }
   };
 
   const classes = [...new Set(students.map((s) => s.className).filter(Boolean))].sort();
-
   const avatarColors = ['from-indigo-400 to-indigo-600','from-purple-400 to-purple-600','from-pink-400 to-pink-600','from-blue-400 to-blue-600','from-emerald-400 to-emerald-600'];
 
   return (
@@ -57,10 +86,10 @@ const StudentsPage = () => {
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
           <h1 className="text-2xl font-bold text-slate-800" style={{fontFamily:'Plus Jakarta Sans,sans-serif'}}>Students</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Manage student records, year levels, and parent contacts</p>
+          <p className="text-slate-500 text-sm mt-0.5">Manage student records, year levels, and parent WhatsApp contacts</p>
         </div>
         {hasRole('SUPER_ADMIN', 'ADMIN') && (
-          <button onClick={() => setShowModal(true)} className="btn-primary">
+          <button onClick={handleOpenAddModal} className="btn-primary">
             <UserPlus size={16} /> Add Student
           </button>
         )}
@@ -124,7 +153,7 @@ const StudentsPage = () => {
           <div className="overflow-x-auto">
             <table className="data-table">
               <thead><tr>
-                <th>Student</th><th>Student ID</th><th>Year</th><th>Class</th><th>Roll No.</th><th>Parent</th><th>WhatsApp</th><th>Status</th>
+                <th>Student</th><th>Student ID</th><th>Year</th><th>Class</th><th>Roll No.</th><th>Parent</th><th>WhatsApp</th><th>Action</th>
               </tr></thead>
               <tbody>
                 {students.map((s, i) => (
@@ -169,9 +198,12 @@ const StudentsPage = () => {
                         : <span className="flex items-center gap-1 text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/60"><Phone size={12} /> Missing</span>}
                     </td>
                     <td>
-                      {s.isActive
-                        ? <span className="badge-sent">Active</span>
-                        : <span className="badge-failed">Inactive</span>}
+                      <button
+                        onClick={() => handleOpenEditModal(s)}
+                        className="btn-secondary btn-sm text-xs py-1 px-2.5 flex items-center gap-1"
+                      >
+                        <Edit2 size={12} /> Edit Phone
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -181,15 +213,19 @@ const StudentsPage = () => {
         )}
       </div>
 
-      {/* Add Student Modal */}
+      {/* Add / Edit Student Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowModal(false)} />
           <div className="relative z-10 w-full max-w-lg bg-white rounded-3xl shadow-2xl p-7 animate-fade-in-up max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-xl font-bold text-slate-800" style={{fontFamily:'Plus Jakarta Sans,sans-serif'}}>Add New Student</h3>
-                <p className="text-slate-500 text-sm mt-0.5">Fill in student, academic year, and parent details</p>
+                <h3 className="text-xl font-bold text-slate-800" style={{fontFamily:'Plus Jakarta Sans,sans-serif'}}>
+                  {editingStudent ? 'Edit Student & Phone' : 'Add New Student'}
+                </h3>
+                <p className="text-slate-500 text-sm mt-0.5">
+                  {editingStudent ? `Update ${editingStudent.name}'s details & parent WhatsApp number` : 'Fill in student, academic year, and parent details'}
+                </p>
               </div>
               <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
                 <X size={16} className="text-slate-600" />
@@ -227,7 +263,7 @@ const StudentsPage = () => {
               </div>
 
               <div className="pt-2 border-t border-slate-100">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Parent / Guardian</p>
+                <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">Parent / Guardian & WhatsApp Contact</p>
                 <div className="space-y-3">
                   <div>
                     <label className="input-label">Parent Name</label>
@@ -236,7 +272,7 @@ const StudentsPage = () => {
                   </div>
                   <div>
                     <label className="input-label">WhatsApp Number <span className="text-slate-400 font-normal normal-case">(e.g. 919876543210)</span></label>
-                    <input className="input font-mono" placeholder="919876543210"
+                    <input className="input font-mono font-semibold" placeholder="919876543210"
                       value={form.parent.whatsappNumber} onChange={(e) => setForm({ ...form, parent: { ...form.parent, whatsappNumber: e.target.value } })} />
                   </div>
                   <div>
@@ -252,7 +288,11 @@ const StudentsPage = () => {
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary flex-1 justify-center">Cancel</button>
                 <button type="submit" disabled={saving} className="btn-primary flex-1 justify-center">
-                  {saving ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : <><UserPlus size={14} /> Add Student</>}
+                  {saving
+                    ? <><Loader2 size={14} className="animate-spin" /> Saving...</>
+                    : editingStudent
+                    ? 'Save Changes'
+                    : <><UserPlus size={14} /> Add Student</>}
                 </button>
               </div>
             </form>

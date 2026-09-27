@@ -19,7 +19,7 @@ router.get('/', getStudents);
 router.get('/:studentId', getStudent);
 router.post('/', authorize('SUPER_ADMIN', 'ADMIN'), createStudent);
 router.post('/bulk', authorize('SUPER_ADMIN', 'ADMIN'), bulkCreateStudents);
-router.put('/:studentId', authorize('SUPER_ADMIN', 'ADMIN'), updateStudent);
+router.put('/:studentId', authorize('SUPER_ADMIN', 'ADMIN', 'TEACHER'), updateStudent);
 router.delete('/:studentId', authorize('SUPER_ADMIN', 'ADMIN'), deleteStudent);
 
 export default router;
