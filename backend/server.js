@@ -45,6 +45,30 @@ app.use('/api/students', studentRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+// ─── Meta WhatsApp Webhook Verification & Events ───────────────────────────
+const WHATSAPP_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'aits_whatsapp_verify_token_2026';
+
+app.get('/api/webhook', (req, res) => {
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode && token) {
+    if (mode === 'subscribe' && token === WHATSAPP_VERIFY_TOKEN) {
+      console.log('✅ Meta WhatsApp Webhook verified successfully!');
+      return res.status(200).send(challenge);
+    } else {
+      console.error('❌ Meta Webhook verification failed: Token mismatch');
+      return res.sendStatus(403);
+    }
+  }
+  return res.sendStatus(400);
+});
+
+app.post('/api/webhook', (req, res) => {
+  return res.status(200).send('EVENT_RECEIVED');
+});
+
 // ─── Health Check ──────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.status(200).json({
