@@ -121,18 +121,18 @@ const NotificationsPage = () => {
       )}
 
       {/* Filters */}
-      <div className="card p-4 flex flex-wrap gap-3 items-center animate-fade-in-up">
+      <div className="card p-4 flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center animate-fade-in-up">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <Filter size={14} className="text-slate-400" />
+          <Filter size={14} className="text-slate-400 flex-shrink-0" />
           <span className="text-xs text-slate-500 font-medium mr-1">Date:</span>
           {DATE_FILTERS.map((f) => (
             <button
               key={f.value}
               onClick={() => { setDateRange(f.value); setPage(1); }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+              className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                 dateRange === f.value
                   ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50 border border-slate-200/60'
               }`}
             >
               {f.label}
@@ -145,17 +145,17 @@ const NotificationsPage = () => {
             <button
               key={f.value}
               onClick={() => { setStatus(f.value); setPage(1); }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+              className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                 status === f.value
                   ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50 border border-slate-200/60'
               }`}
             >
               {f.label}
             </button>
           ))}
         </div>
-        <button onClick={fetchNotifications} className="ml-auto btn-secondary btn-sm">
+        <button onClick={fetchNotifications} className="w-full sm:w-auto sm:ml-auto btn-secondary btn-sm justify-center">
           <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh
         </button>
       </div>

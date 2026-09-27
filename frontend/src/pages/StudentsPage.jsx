@@ -84,46 +84,49 @@ const StudentsPage = () => {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between animate-fade-in-up">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fade-in-up">
         <div>
           <h1 className="text-2xl font-bold text-slate-800" style={{fontFamily:'Plus Jakarta Sans,sans-serif'}}>Students</h1>
           <p className="text-slate-500 text-sm mt-0.5">Manage student records, year levels, and parent WhatsApp contacts</p>
         </div>
         {hasRole('SUPER_ADMIN', 'ADMIN') && (
-          <button onClick={handleOpenAddModal} className="btn-primary">
+          <button onClick={handleOpenAddModal} className="btn-primary w-full sm:w-auto justify-center">
             <UserPlus size={16} /> Add Student
           </button>
         )}
       </div>
 
       {/* Filter bar */}
-      <div className="card p-4 flex flex-wrap gap-3 items-center">
+      <div className="card p-4 flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center">
         {/* Search */}
-        <div className="relative flex-1 min-w-[200px]">
+        <div className="relative flex-1 min-w-0 sm:min-w-[200px]">
           <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input type="text" className="input pl-9 py-2" placeholder="Search students..."
+          <input type="text" className="input pl-9 py-2 text-sm" placeholder="Search students..."
             value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
 
-        {/* Year Dropdown Filter */}
-        <div className="flex items-center gap-2">
-          <Calendar size={14} className="text-slate-400" />
-          <select className="input w-auto py-2 text-sm font-semibold text-slate-700" value={year} onChange={(e) => setYear(e.target.value)}>
-            <option value="">All Years</option>
-            <option value="1">Year 1</option>
-            <option value="2">Year 2</option>
-            <option value="3">Year 3</option>
-            <option value="4">Year 4</option>
-          </select>
-        </div>
+        {/* Dropdown filters container */}
+        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+          {/* Year Dropdown Filter */}
+          <div className="flex-1 sm:flex-none flex items-center gap-2">
+            <Calendar size={14} className="text-slate-400 flex-shrink-0" />
+            <select className="input w-full sm:w-auto py-2 text-sm font-semibold text-slate-700" value={year} onChange={(e) => setYear(e.target.value)}>
+              <option value="">All Years</option>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+              <option value="4">Year 4</option>
+            </select>
+          </div>
 
-        {/* Class Filter */}
-        <div className="flex items-center gap-2">
-          <Filter size={14} className="text-slate-400" />
-          <select className="input w-auto py-2 text-sm" value={className} onChange={(e) => setClassName(e.target.value)}>
-            <option value="">All Classes</option>
-            {classes.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
+          {/* Class Filter */}
+          <div className="flex-1 sm:flex-none flex items-center gap-2">
+            <Filter size={14} className="text-slate-400 flex-shrink-0" />
+            <select className="input w-full sm:w-auto py-2 text-sm" value={className} onChange={(e) => setClassName(e.target.value)}>
+              <option value="">All Classes</option>
+              {classes.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 

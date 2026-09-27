@@ -136,18 +136,25 @@ const Layout = ({ children }) => {
         {/* Top header */}
         <header className="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 bg-white border-b border-slate-100 shadow-sm">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 mr-2">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-xl hover:bg-slate-100 text-slate-500 flex-shrink-0">
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-xl hover:bg-slate-100 text-slate-600 flex-shrink-0">
               <Menu size={20} />
             </button>
+            {/* Mobile Brand Logo */}
+            <div className="flex lg:hidden items-center gap-1.5 flex-shrink-0">
+              <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-xs shadow-sm">
+                A
+              </div>
+              <span className="font-bold text-slate-800 text-sm hidden sm:block font-['Plus_Jakarta_Sans']">AITS</span>
+            </div>
             {/* Search bar */}
-            <div className="search-bar flex-1 max-w-xs sm:max-w-md">
+            <div className="search-bar flex-1 max-w-xs sm:max-w-md ml-1 sm:ml-0">
               <Search size={15} className="text-slate-400 flex-shrink-0" />
               <input
                 type="text"
-                placeholder="Search students, classes, attendance..."
+                placeholder="Search..."
                 className="bg-transparent outline-none w-full text-slate-600 text-sm placeholder-slate-400"
               />
-              <span className="text-xs text-slate-400 bg-slate-200 px-1.5 py-0.5 rounded font-mono hidden sm:block">⌘K</span>
+              <span className="text-xs text-slate-400 bg-slate-200 px-1.5 py-0.5 rounded font-mono hidden md:block">⌘K</span>
             </div>
           </div>
 
