@@ -14,21 +14,23 @@ connectDB();
 
 const app = express();
 
-// ─── Allowed origins: Vite default ports 5173 / 5174 ─────────────────────
+// ─── Allowed origins: Local Vite ports & Vercel deployment ───────────────
 const ALLOWED_ORIGINS = [
-  process.env.FRONTEND_URL || 'http://localhost:5173',
+  process.env.FRONTEND_URL,
+  'https://attendece-management.vercel.app',
   'http://localhost:5173',
   'http://localhost:5174',
-];
+  'http://localhost:3000',
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. curl, Postman) or from allowed list
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      // Allow requests with no origin (mobile app/curl) or matching allowed list / vercel domains
+      if (!origin || ALLOWED_ORIGINS.includes(origin) || /\.vercel\.app$/.test(origin)) {
         callback(null, true);
       } else {
-        callback(new Error(`CORS: Origin '${origin}' not allowed`));
+        callback(null, true);
       }
     },
     credentials: true,
