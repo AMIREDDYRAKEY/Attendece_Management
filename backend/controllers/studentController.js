@@ -69,13 +69,17 @@ const createStudent = async (req, res) => {
 // ─── Update student ────────────────────────────────────────────────────────
 const updateStudent = async (req, res) => {
   try {
+    const { studentId } = req.params;
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(studentId);
+    const filter = isObjectId ? { _id: studentId } : { studentId: studentId.toUpperCase() };
+
     const student = await Student.findOneAndUpdate(
-      { studentId: req.params.studentId.toUpperCase() },
+      filter,
       req.body,
       { new: true, runValidators: true }
     );
     if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
-    return res.status(200).json({ success: true, message: 'Student updated', student });
+    return res.status(200).json({ success: true, message: 'Student updated successfully', student });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to update student', error: error.message });
   }

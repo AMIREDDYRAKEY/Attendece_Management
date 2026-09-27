@@ -65,7 +65,8 @@ const StudentsPage = () => {
     setSaving(true);
     try {
       if (editingStudent) {
-        await api.put(`/students/${editingStudent._id}`, form);
+        const targetId = editingStudent.studentId || editingStudent._id;
+        await api.put(`/students/${targetId}`, form);
         toast.success('Student updated successfully!');
       } else {
         await api.post('/students', form);
