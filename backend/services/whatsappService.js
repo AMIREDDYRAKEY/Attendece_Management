@@ -118,9 +118,14 @@ const sendAbsenceWhatsApp = async ({
   // Construct WhatsApp template message payload
   // Template parameters match the approved template:
   // "Dear Parent, Your child {{1}} was marked absent on {{2}}. ... {{3}}"
+  let cleanedPhone = String(phoneNumber).replace(/\D/g, '');
+  if (cleanedPhone.length === 10) {
+    cleanedPhone = `91${cleanedPhone}`;
+  }
+
   const payload = {
     messaging_product: 'whatsapp',
-    to: String(phoneNumber).replace(/\D/g, ''), // Ensure only digits
+    to: cleanedPhone,
     type: 'template',
     template: {
       name: templateName,
