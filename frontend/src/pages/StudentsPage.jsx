@@ -153,7 +153,7 @@ const StudentsPage = () => {
           <div className="overflow-x-auto">
             <table className="data-table">
               <thead><tr>
-                <th>Student</th><th>Student ID</th><th>Year</th><th>Class</th><th>Roll No.</th><th>Parent</th><th>WhatsApp</th><th>Action</th>
+                <th>Student</th><th>Roll No.</th><th>Year</th><th>Class</th><th>Parent & Phone</th><th>Action</th>
               </tr></thead>
               <tbody>
                 {students.map((s, i) => (
@@ -163,12 +163,12 @@ const StudentsPage = () => {
                         <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${avatarColors[i % avatarColors.length]} flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm`}>
                           {s.name.charAt(0)}
                         </div>
-                        <span className="font-semibold text-slate-800">{s.name}</span>
+                        <span className="font-semibold text-slate-800 text-sm">{s.name}</span>
                       </div>
                     </td>
                     <td>
                       <span className="font-mono text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
-                        {s.studentId}
+                        {s.rollNumber || s.studentId}
                       </span>
                     </td>
                     <td>
@@ -181,28 +181,24 @@ const StudentsPage = () => {
                         {s.className}
                       </span>
                     </td>
-                    <td className="text-slate-600 font-medium">{s.rollNumber || '—'}</td>
                     <td>
-                      {s.parent?.name
-                        ? <div>
-                            <p className="text-slate-800 text-sm font-medium">{s.parent.name}</p>
-                            <p className="text-slate-400 text-xs">{s.parent.relation || 'Parent'}</p>
-                          </div>
-                        : <span className="text-slate-400">—</span>}
-                    </td>
-                    <td>
-                      {s.parent?.whatsappNumber === undefined
-                        ? <span className="flex items-center gap-1 text-slate-400 text-xs"><Phone size={12} /> Hidden</span>
-                        : s.parent?.whatsappNumber
-                        ? <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60"><Phone size={12} /> Registered</span>
-                        : <span className="flex items-center gap-1 text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/60"><Phone size={12} /> Missing</span>}
+                      {s.parent?.name || s.parent?.whatsappNumber ? (
+                        <div>
+                          <p className="text-slate-800 text-sm font-medium">{s.parent?.name || 'Parent'}</p>
+                          <p className="text-slate-500 font-mono text-xs flex items-center gap-1 mt-0.5">
+                            <Phone size={11} className="text-emerald-600" /> {s.parent?.whatsappNumber ? `+${s.parent.whatsappNumber}` : 'No phone set'}
+                          </p>
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 text-xs">—</span>
+                      )}
                     </td>
                     <td>
                       <button
                         onClick={() => handleOpenEditModal(s)}
                         className="btn-secondary btn-sm text-xs py-1 px-2.5 flex items-center gap-1"
                       >
-                        <Edit2 size={12} /> Edit Phone
+                        <Edit2 size={12} /> Edit Details
                       </button>
                     </td>
                   </tr>
